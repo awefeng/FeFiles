@@ -3,39 +3,34 @@
  * @return {number[]}
  */
 var findDiagonalOrder = function(matrix) {
-    let m = matrix[0].length, n =matrix.length, result =[]
-    
-    // 对角线的x + y  = 遍历到了第几折
-    // 1.计算出总的对脚线条数
-    const lines = m+n-1  // 2*(n-1) + (m-n)+1
-    // 2.计算填入值
-    let line = 0
-    while(line < lines){
-        if(line < n-1){
-            for(let x = 0;x<line;x++){
-                line%2===0 ? result.push(matrix[x][line-x]): result.push(matrix[line-x][x])
-            }
-        }else if(line > m-1){
-            for(let x=line-n+1;x<m;x++){
-                line%2 ===0 ? result.push(matrix[x][line-x]) : result.push(matrix[m-x][line-m+x])
+    if(!matrix.length) return [];
+    let l_row = matrix.length - 1;
+    let l_col = matrix[0].length - 1;
+    let row = 0, col = 0;
+    let is_up = true;
+    let fun = (res) => {
+        res.push(matrix[row][col]);
+        if(row == l_row && col == l_col){
+            return res;
+        }
+        if(is_up){
+            if(col < l_col && row > 0){
+                col++;
+                row--;
+            }else{
+                is_up = !is_up;
+                col < l_col ? col++ : row++;
             }
         }else{
-            //debug
+            if(col > 0 && row < l_row){
+                col--;
+                row++;
+            }else{
+                is_up = !is_up;
+                row < l_row ? row++ : col++;
+            }
         }
-        line++s
+        return fun(res);
     }
-    return result
+    return fun([]);
 };
-
-
-
-
-
-
-
-
-
-
-
-
-console.log(findDiagonalOrder([[1,2,3],[4,5,6],[7,8,9]]))
