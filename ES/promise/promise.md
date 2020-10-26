@@ -27,5 +27,9 @@
 5. `promsie`中的`then`会返回一个新的`promise`，因此有链式调用`.then().then()`
 6. 因为`.catch`其实是`.then`的语法糖，所以`.catch`也是返回的一个`promise`，因此也可以`.catch().then()`
 7. `promise`状态改变以后，就不会再改变了，比如已经`resolve`了，再去后面抛一个异常，`promise`后面的`catch`是捕获不到异常的
-8. 
+8. `promise`的`finally`也是返回一个`promise`
+
+
+
+​		例子：见文件夹
 
