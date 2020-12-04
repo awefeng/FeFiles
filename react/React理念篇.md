@@ -151,3 +151,103 @@
 
 https://github.com/facebook/react/issues/7942
 
+
+
+### Fiber在reconciler中的原理
+
+#### Fiber的含义
+
+Fiber有三层含义：
+
+1. fiber指的是一种架构：React15里面`reconciler`是进行递归更新，其中节点的信息是保存在调用栈里面，所以叫`stack reconciler`；而React16里面`reconciler`也是沿用深度遍历更新，但是节点保存在fiber节点中（这里说的的fiber节点指的fiber作为一种静态数据结构和动态数据单元，见第2、3条），所以React16里面叫`fiber reconciler`
+2. fiber指的是一种静态数据结构：每一个fiber节点，都对应一个组件（一个标签其实也是一个组件，在react里面叫`hostComponent`），并且保存了这个组件的类型（`functionComponent`，`classComponent`，`hostComponent`），对应的DOM节点等信息。（这一条其实就是react里面JSX经过转换后的数据结构）
+3. fiber指的是一种动态工作单元：fiber作为静态数据结构（JSX）的时候，数据结构里面只有`tag`，`attr`，`child`和一些react规定的节点信息，而没有保存组件的状态以及组件需要执行的副作用，所以fiber作为动态工作单元，就保存了组件的状态和副作用
+
+#### Fiber作为静态数据结构
+
+1. 在整个应用最开始加载，最开始render的时候，react会创建一个管理诸如ReactDOM.render()的节点叫`FiberRootNode`(记住这一点，一个应用中可以有多个ReactDOM.render的调用)。
+2. 在应用中每调用一次render都会创建一个叫`RootFiber`的节点，这些节点被`FiberRootNoode`管理。
+3. 然后React进行深度遍历，将每一个组件（包括标签）生成fiber节点；
+4. fiber节点（除去`FiberRootNode`和`RootFiber`之间的关系）之间会存在父子关系（`child`，`return`,用reture而不用father是因为深度遍历里面父组件获取子组件的时候是递归的返回结果，所以用的是return而不是father）、兄弟关系`sibling`；
+5. `FiberRootNode`和`RootFiber`之间的关系是`current`与`stateNode`
+
+关系图：
+
+![Fiber作为静态数据](/Users/awefeng/Code/summary/react/image-20201204193222944.png)
+
+
+
+#### Fiber作为动态工作单元
+
+1. 作为动态工作单元，Fiber节点中还保存了在一次更新中：节点的状态、要执行的动作、调度优先级、双缓存中另外一个fiber树的指针等。
+2. 详见FiberNode的代码定义
+
+#### FiberNode在React中的定义
+
+```javascript
+function FiberNode(
+  tag: WorkTag,
+  pendingProps: mixed,
+  key: null | string,
+  mode: TypeOfMode,
+) {
+  // 作为静态数据结构的属性
+  // node在react对应的组件类型: functionComp classComp HostComp
+  this.tag = tag;
+  // key 属性
+  this.key = key;
+  // 大部分情况同type，某些情况不同，比如FunctionComponent使用React.memo包裹
+  this.elementType = null;
+   // FC情况下指FC CC情况下指类组件CC HostComp情况下指tag name
+  this.type = null;
+  this.stateNode = null;
+
+  // 用于连接其他Fiber节点形成Fiber树 
+  this.return = null;
+  this.child = null;
+  this.sibling = null;
+  this.index = 0;  // 有兄弟节点时，代表索引
+
+  this.ref = null;
+
+  // 作为动态的工作单元的属性
+  this.pendingProps = pendingProps;
+  this.memoizedProps = null;  //记忆化
+  this.updateQueue = null;
+  this.memoizedState = null;
+  this.dependencies = null;
+
+  this.mode = mode;
+
+  this.effectTag = NoEffect;
+  this.nextEffect = null;
+
+  this.firstEffect = null;
+  this.lastEffect = null;
+
+  // 调度优先级相关
+  this.lanes = NoLanes;
+  this.childLanes = NoLanes;
+
+  // 双缓存 指向该fiber在另一次更新时对应的fiber
+  this.alternate = null;
+}
+```
+
+
+
+####  双缓存以及在Fiber中的应用
+
+1. 问题：指的是在渲染画面的时候，如果要播放下一帧的情况下才去渲染：显示下一帧的时间 = 下一帧绘制完成+播放器切换到下一帧；如果下一帧的绘制时间特别长（比如游戏中的爆炸效果，光线追踪等。），界面就会卡顿。
+
+2. 双缓存：双缓存就是解决卡顿的一种办法：通过在内存中提前绘制好下一帧，当需要显示下一帧的时候，一般情况下，显示下一帧的时间 = 播放器切换到下一帧，所以这个过程就会很快，纳秒级别。（真实的双缓存比这个复杂很多，只是说个思想。）
+
+3. Fiber中双缓存的应用（先只谈项目里只有一个render的情况）：
+
+   1. 在首屏渲染之前，react会创建`FiberRootNode`和`rootFiber`两个节点，此时`FiberRootNode`通过`current`指针指向`rootFiber`
+   2. 在进行首屏渲染（或者更新）的时候，会重新创建一个新的`rootFiber`节点（此时两个`rootFiber`节点通过alternate连接），然后采用深度优先遍历将组件遍历成fiber树，遍历完成后，`FiberRootNode`会将`current`指向新的fiber树。![双缓存中的两个RootFiber](/Users/awefeng/Code/summary/react/image-20201204202343799.png)
+   3. 当进行更新的时候，因为这个时候的`alternate`属性指向另外一个`rootFiber`，所以不会再生成新的`rootFiber`，而是进行复用，此时就会进行`reconciler`的`diff`算法。计算出下一个`workInProgress`树。
+   4. 更新和首屏渲染最大的区别就是是否进行了diff算法。
+
+   
+
