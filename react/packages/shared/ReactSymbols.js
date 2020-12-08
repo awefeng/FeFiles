@@ -34,6 +34,7 @@ export let REACT_LEGACY_HIDDEN_TYPE = 0xeae3;
 
 if (typeof Symbol === 'function' && Symbol.for) {
   const symbolFor = Symbol.for;
+  // 支持symbol的情况下 创建一个Symbol.for('react.element')来表示react element
   REACT_ELEMENT_TYPE = symbolFor('react.element');
   REACT_PORTAL_TYPE = symbolFor('react.portal');
   REACT_FRAGMENT_TYPE = symbolFor('react.fragment');

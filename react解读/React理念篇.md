@@ -7,7 +7,7 @@
 3. **CPU瓶颈：**
    1. 现代浏览器工作原理：主流浏览器60帧，一帧16.6ms，进行` css tree + js tree -> 渲染 `的工作
    2. js计算后，浏览器生成页面布局（render tree），然后再进行渲染。
-   3. js计算过大的时候导致计算时间超过16.6ms（不一定是16.6ms，因为这时间还包括生成渲染树和进行渲染的时间）
+   3. js计算过大的时候导致计算时间超过16.6ms（不一定是16.6ms，因为这时间还包括生成渲染树和进行渲染的时间；一帧的时间可能会超过或者低于16.6ms，取决于frame task）
    4. 超过一帧时间，计算继续进行，导致没有时间进行渲染相关工作。页面出现`卡死`
 4. **IO瓶颈：** 网络延迟，这一般解决办法加`loading`显示，让用户明显感觉到等待
 5. **React老架构的问题：只能同步更新**
@@ -129,7 +129,7 @@
    ```javascript
    function * useState(xxx){ //步骤2 传染性，调用（或者说是发起更新）的函数也必须是reconcile
    	yield reconcile()
-     return 'ok'
+     return 'update'
    }
    
    function * reconcile(){
@@ -173,7 +173,7 @@ Fiber有三层含义：
 
 关系图：
 
-![Fiber作为静态数据](/Users/awefeng/Code/summary/react/image-20201204193222944.png)
+![Fiber作为静态数据](/Users/awefeng/Code/summary/react解读/image-20201204193222944.png)
 
 
 
@@ -245,9 +245,10 @@ function FiberNode(
 3. Fiber中双缓存的应用（先只谈项目里只有一个render的情况）：
 
    1. 在首屏渲染之前，react会创建`FiberRootNode`和`rootFiber`两个节点，此时`FiberRootNode`通过`current`指针指向`rootFiber`
-   2. 在进行首屏渲染（或者更新）的时候，会重新创建一个新的`rootFiber`节点（此时两个`rootFiber`节点通过alternate连接），然后采用深度优先遍历将组件遍历成fiber树，遍历完成后，`FiberRootNode`会将`current`指向新的fiber树。![双缓存中的两个RootFiber](/Users/awefeng/Code/summary/react/image-20201204202343799.png)
+   2. 在进行首屏渲染（或者更新）的时候，会重新创建一个新的`rootFiber`节点（此时两个`rootFiber`节点通过alternate连接），然后采用深度优先遍历将组件遍历成fiber树，遍历完成后，`FiberRootNode`会将`current`指向新的fiber树。![双缓存中的两个RootFiber](/Users/awefeng/Code/summary/react解读/image-20201204202343799.png)
    3. 当进行更新的时候，因为这个时候的`alternate`属性指向另外一个`rootFiber`，所以不会再生成新的`rootFiber`，而是进行复用，此时就会进行`reconciler`的`diff`算法。计算出下一个`workInProgress`树。
    4. 更新和首屏渲染最大的区别就是是否进行了diff算法。
+   5. 当应用中有多个.render的时候，就会有多个RootFiber节点，但是FiberRootNode只会有一个`current`属性指向react编译过程中正在运作的那个Fiber树的RootFiber；其他的RootFiber会在FiberRootNode运行他所在的fiber树的时候，用`current`指向他。
 
    
 

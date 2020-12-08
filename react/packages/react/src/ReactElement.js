@@ -13,6 +13,7 @@ import ReactCurrentOwner from './ReactCurrentOwner';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
+// 保留属性
 const RESERVED_PROPS = {
   key: true,
   ref: true,
@@ -27,19 +28,22 @@ let specialPropKeyWarningShown,
 if (__DEV__) {
   didWarnAboutStringRefs = {};
 }
-
+// 实例上是否有有效的ref
 function hasValidRef(config) {
+  // dev环境 不用管
   if (__DEV__) {
     if (hasOwnProperty.call(config, 'ref')) {
+      // 获取dev环境下ref属性的getter
       const getter = Object.getOwnPropertyDescriptor(config, 'ref').get;
       if (getter && getter.isReactWarning) {
         return false;
       }
     }
   }
+  // 所以验证ref是否有效就是 实例里面传了ref属性没有
   return config.ref !== undefined;
 }
-
+// 实例上是否有有效的key 同ref
 function hasValidKey(config) {
   if (__DEV__) {
     if (hasOwnProperty.call(config, 'key')) {
@@ -124,16 +128,23 @@ function warnIfStringRefCannotBeAutoConverted(config) {
 }
 
 /**
+ * 深入理解JSX step2
+ *
  * Factory method to create a new React element. This no longer adheres to
  * the class pattern, so do not use new to call it. Also, instanceof check
  * will not work. Instead test $$typeof field against Symbol.for('react.element') to check
  * if something is a React Element.
+ * 创建React element的工厂函数. 这个函数不是类，所以不要用new关键字来调用它，同样instanceof也不会生效。
+ * 取而代之的是检查$$typeof属性来确定是否是React element
  *
- * @param {*} type
- * @param {*} props
- * @param {*} key
- * @param {string|object} ref
- * @param {*} owner
+ * ReactElement的工作：
+ *   创建一个element对象，填入type, key, ref, 其他props；
+ *   创建一个$$typeof内置属性来表示这是一个react element。
+ * @param {*} type  // classComponent, functionComponent, hostComponent代表class组件本身（不是实例）
+ * @param {*} props  // 组件实例属性
+ * @param {*} key // key属性
+ * @param {string|object} ref // ref属性
+ * @param {*} owner // 记录是哪个component创建了这个element
  * @param {*} self A *temporary* helper to detect places where `this` is
  * different from the `owner` when React.createElement is called, so that we
  * can warn. We want to get rid of owner and replace string `ref`s with arrow
@@ -146,18 +157,21 @@ function warnIfStringRefCannotBeAutoConverted(config) {
 const ReactElement = function(type, key, ref, self, source, owner, props) {
   const element = {
     // This tag allows us to uniquely identify this as a React Element
+    // $$typeof 属性让我们能够确定这是一个React element
     $$typeof: REACT_ELEMENT_TYPE,
 
     // Built-in properties that belong on the element
+    // element的内置元素
     type: type,
     key: key,
     ref: ref,
-    props: props,
+    props: props, //这里面包含children
 
     // Record the component responsible for creating this element.
+    // 记录是哪个component创建了这个element
     _owner: owner,
   };
-
+  // 开发环境 不用管
   if (__DEV__) {
     // The validation flag is currently mutative. We put it on
     // an external backing store so that we can freeze the whole object.
@@ -195,7 +209,7 @@ const ReactElement = function(type, key, ref, self, source, owner, props) {
       Object.freeze(element);
     }
   }
-
+  // 返回 element
   return element;
 };
 
@@ -342,21 +356,27 @@ export function jsxDEV(type, config, maybeKey, source, self) {
 }
 
 /**
+ * 深入理解JSX step1
+ *
+ * 以给定的type创建一个React element
  * Create and return a new ReactElement of the given type.
  * See https://reactjs.org/docs/react-api.html#createelement
  */
 export function createElement(type, config, children) {
   let propName;
-
+  // 先将保留字段提取出来
   // Reserved names are extracted
   const props = {};
 
+  // 四个保留字段
   let key = null;
   let ref = null;
   let self = null;
   let source = null;
 
+  // 如果属性不为空
   if (config != null) {
+    // 如果有ref就赋值ref
     if (hasValidRef(config)) {
       ref = config.ref;
 
@@ -364,6 +384,7 @@ export function createElement(type, config, children) {
         warnIfStringRefCannotBeAutoConverted(config);
       }
     }
+    // 如果有key 就将key转换为string进行赋值
     if (hasValidKey(config)) {
       key = '' + config.key;
     }
@@ -371,8 +392,11 @@ export function createElement(type, config, children) {
     self = config.__self === undefined ? null : config.__self;
     source = config.__source === undefined ? null : config.__source;
     // Remaining properties are added to a new props object
+    // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty
+    // 遍历config里的可枚举属性
     for (propName in config) {
       if (
+        // 如果config的某个属性是自身属性 并且 不在保留属性里面 则 将属性填入props
         hasOwnProperty.call(config, propName) &&
         !RESERVED_PROPS.hasOwnProperty(propName)
       ) {
@@ -383,7 +407,9 @@ export function createElement(type, config, children) {
 
   // Children can be more than one argument, and those are transferred onto
   // the newly allocated props object.
+  // 子参数可以是多个参数，这些参数将被转移到新分配的props对象上
   const childrenLength = arguments.length - 2;
+  // 计算children个数
   if (childrenLength === 1) {
     props.children = children;
   } else if (childrenLength > 1) {
@@ -398,7 +424,8 @@ export function createElement(type, config, children) {
     }
     props.children = childArray;
   }
-
+  // 计算Component的默认属性，再次强调一遍 type 指的FC CC HC 本身，
+  // 所以有些人喜欢在写的HOC或者组件的最后，写一个static属性 defaultProps
   // Resolve default props
   if (type && type.defaultProps) {
     const defaultProps = type.defaultProps;
@@ -422,6 +449,7 @@ export function createElement(type, config, children) {
       }
     }
   }
+  // 返回一个React element函数
   return ReactElement(
     type,
     key,
@@ -538,6 +566,11 @@ export function cloneElement(element, config, children) {
 }
 
 /**
+ * 深入理解JSX step3
+ *
+ * 验证一个对象是不是 react element: 对象 + 不是null + $$tyoeof === REACT_ELEMENT_TYPE
+ *
+ * 关于Symbol.for() https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Symbol/for
  * Verifies the object is a ReactElement.
  * See https://reactjs.org/docs/react-api.html#isvalidelement
  * @param {?object} object
