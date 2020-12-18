@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+        .placeholder1{
+            width: 50%;
+            height: 50vw;
+            background: red;
+        }
+        .placeholder2 {
+            width: 5%;
+            overflow: hidden;
+            background: blue;
+        }
+
+        .placeholder2:after {
+            content: '';
+            display: block;
+            margin-top: 100%; /* margin 百分比相对父元素宽度计算 */
+        }
+    </style>
+        <div class="placeholder1">
+            用css的vm
+        </div>  
+        <div class="placeholder2">
+            <div style="position: absolute; white-space:pre-wrap;">用伪类</div>
+        </div>
+</body>
+</html>
