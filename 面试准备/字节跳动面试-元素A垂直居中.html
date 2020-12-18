@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>垂直居中</title>
+</head>
+<body style="margin: 0">
+    <style>
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: calc(100% - 20px);
+            height: 50vw;
+            background-color: blueviolet;
+            position: absolute;
+            top: 50%;
+            box-sizing: border-box;
+            transform: translate(0, -50%);
+            margin: 0 10px;
+        }
+        .style-a {
+            font-size: 20px;
+        }
+    </style>
+        <div class="container">
+            <span class="style-a">A</span>
+        </div>
+    
+</body>
+</html>

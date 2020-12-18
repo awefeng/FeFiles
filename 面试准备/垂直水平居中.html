@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .father1{
+            height: 400px;
+            width: 400px;
+            border: 1px solid black;
+        }
+        .son1{
+            height: 100px;
+            width: 200px;
+            position: relative;
+            top: 50%;
+            left: 50%;
+            margin: -50px;
+            background-color: red;
+        }
+        .father2{
+            width: 400px; height: 400px; border: 1px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .son2{
+            width: 200px;
+            height: 100px;
+            background-color: red;
+        }
+        .father3{
+            height: 400px;
+            width: 400px;
+            border: 1px solid black;
+        }
+        .son3{
+            position: relative;
+            width: 200px;
+            height: 100px;
+            top: 50%;
+            left: 50%;
+            background-color: red;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="father1">
+        <div class="son1">
+
+        </div>
+    </div>
+    <div class="father2">
+        <div class="son2">
+
+        </div>
+    </div>
+    <div class="father3">
+        <div class="son3">
+
+        </div>
+    </div>
+</body>
+</html>

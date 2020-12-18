@@ -1,4 +1,4 @@
-## React架构篇1
+## React架构篇1：React的工作流程 和 对JSX的理解
 
 ### React在浏览器中的工作流程
 
@@ -22,7 +22,7 @@
 
 2. 按照理念篇：React首先创建fiber树，然后进行React三大步：scheduler ->reconciler->renderer
 
-   ![React流程](/Users/awefeng/Code/summary/react解读/WX20201206-232524@2x.png)
+   ![React整体流程简介](./React整体流程简介.png)
 
 
 

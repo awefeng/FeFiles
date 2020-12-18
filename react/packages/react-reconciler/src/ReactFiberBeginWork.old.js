@@ -234,6 +234,7 @@ export function reconcileChildren(
   nextChildren: any,
   renderLanes: Lanes,
 ) {
+  // 通过current 是否等于null 来判断是否
   if (current === null) {
     // If this is a fresh new component that hasn't been rendered yet, we
     // won't update its child set by applying minimal side-effects. Instead,
@@ -1065,8 +1066,9 @@ function updateHostComponent(
   const prevProps = current !== null ? current.memoizedProps : null;
 
   let nextChildren = nextProps.children;
+  // 当前节点是不是只包含文本子节点
   const isDirectTextChild = shouldSetTextContent(type, nextProps);
-
+  // 如果是子节点只有文本节点  则跳过对这个节点的子节点的遍历 DFS到这一层就completeWork了
   if (isDirectTextChild) {
     // We special case a direct text child of a host node. This is a common
     // case. We won't handle it as a reified child. We will instead handle
@@ -1080,6 +1082,7 @@ function updateHostComponent(
   }
 
   markRef(current, workInProgress);
+  // 协调当前节点的子节点
   reconcileChildren(current, workInProgress, nextChildren, renderLanes);
   return workInProgress.child;
 }
@@ -2994,9 +2997,11 @@ function remountFiber(
   }
 }
 
+
+// beginWork阶段
 function beginWork(
-  current: Fiber | null,
-  workInProgress: Fiber,
+  current: Fiber | null,   // current fiber树
+  workInProgress: Fiber,   // workInProgress fiber树
   renderLanes: Lanes,
 ): Fiber | null {
   const updateLanes = workInProgress.lanes;
@@ -3018,7 +3023,7 @@ function beginWork(
       );
     }
   }
-
+  // 如果current不是空 则去进行更新
   if (current !== null) {
     const oldProps = current.memoizedProps;
     const newProps = workInProgress.pendingProps;
@@ -3232,6 +3237,7 @@ function beginWork(
   // move this assignment out of the common path and into each branch.
   workInProgress.lanes = NoLanes;
 
+  // 根据当前fiber节点的tag进行分支处理 类别 'ReactWorkTags.js'
   switch (workInProgress.tag) {
     case IndeterminateComponent: {
       return mountIndeterminateComponent(
@@ -3281,8 +3287,10 @@ function beginWork(
         renderLanes,
       );
     }
+    // 根节点的时候
     case HostRoot:
       return updateHostRoot(current, workInProgress, renderLanes);
+    // hostComponent的时候
     case HostComponent:
       return updateHostComponent(current, workInProgress, renderLanes);
     case HostText:
