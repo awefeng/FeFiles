@@ -24,7 +24,7 @@
 
 2. 对应关系：一般一个chunk块对应一个bundle输出，一对一关系。但是通过`plugin`的某些扩展后，一个chunk可能生成多个bundle（代码分割，按需加载）。
 
-   ![webpack_chunk_bundle](/Users/awefeng/Code/fe/interview/webpack_chunk_bundle.png)
+   ![webpack_chunk_bundle](/Users/awefeng/Code/summary/面试准备/webpack_chunk_bundle.png)
 
 
 
