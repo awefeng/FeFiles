@@ -42,6 +42,29 @@
     6. `p`进行`completeWork`后，遍历`p`的兄弟节点`a`
     7. `a`进入`beginWork`，然后`completeWork`，发现没有兄弟节点以后返回进行`div`的`completeWork`
     8. `div`完成`beginWork`到`completeWork`的过程，`Render`阶段结束。
+    
+4. `performUnitOfWork`就是对一个fiber节点执行一次完整的递归阶段，伪代码
 
-#### 
+    ```javascript
+    function performUnitOfWork(current, workInProgress){
+    	// step1 执行beginWork
+      beginWork(current, workInProgress)
+      // step2 检查是否有子节点
+      if(workInProgress.child){
+        performUnitOfWork(workInProgress.child)
+    	}
+      // step3 子节点完成递归阶段后，当前节点进行归阶段
+      completeWork(workInProgress)
+      // step4 当前节点完成归阶段后，检查是否还有兄弟节点
+      if(workInProgerss.sibling){
+        performUnitOfWork(workInProgress.sibling)
+      }
+    }
+    ```
+
+    
+
+#### React的mount和update对深度优先遍历的影响
+
+在`React`的`mount`阶段和`update`阶段，由于双缓存，`mount`和`update`的两颗树是不一样，因此`beginWork`和`completeWork`也是分为`mount`和`update`。
 

@@ -575,7 +575,7 @@ export function createFiberFromTypeAndProps(
 
   return fiber;
 }
-
+// 从一个JSX创建fiber
 export function createFiberFromElement(
   element: ReactElement,
   mode: TypeOfMode,
