@@ -173,7 +173,7 @@ Fiber有三层含义：
 
 关系图：
 
-![Fiber作为静态数据](/Users/awefeng/Code/summary/react解读/image-20201204193222944.png)
+![Fiber作为静态数据](./Fiber作为静态数据结构.png)
 
 
 
@@ -245,7 +245,7 @@ function FiberNode(
 3. Fiber中双缓存的应用（先只谈项目里只有一个render的情况）：
 
    1. 在首屏渲染之前，react会创建`FiberRootNode`和`rootFiber`两个节点，此时`FiberRootNode`通过`current`指针指向`rootFiber`
-   2. 在进行首屏渲染（或者更新）的时候，会重新创建一个新的`rootFiber`节点（此时两个`rootFiber`节点通过alternate连接），然后采用深度优先遍历将组件遍历成fiber树，遍历完成后，`FiberRootNode`会将`current`指向新的fiber树。![双缓存中的两个RootFiber](/Users/awefeng/Code/summary/react解读/image-20201204202343799.png)
+   2. 在进行首屏渲染（或者更新）的时候，会重新创建一个新的`rootFiber`节点（此时两个`rootFiber`节点通过alternate连接），然后采用深度优先遍历将组件遍历成fiber树，遍历完成后，`FiberRootNode`会将`current`指向新的fiber树。![双缓存中的两个RootFiber](./双缓存中的两个RootFiber.png)
    3. 当进行更新的时候，因为这个时候的`alternate`属性指向另外一个`rootFiber`，所以不会再生成新的`rootFiber`，而是进行复用，此时就会进行`reconciler`的`diff`算法。计算出下一个`workInProgress`树。
    4. 更新和首屏渲染最大的区别就是是否进行了diff算法。
    5. 当应用中有多个.render的时候，就会有多个RootFiber节点，但是FiberRootNode只会有一个`current`属性指向react编译过程中正在运作的那个Fiber树的RootFiber；其他的RootFiber会在FiberRootNode运行他所在的fiber树的时候，用`current`指向他。

@@ -1098,14 +1098,16 @@ function ChildReconciler(shouldTrackSideEffects) {
     return created;
   }
 
+  // diff 单一节点
   function reconcileSingleElement(
-    returnFiber: Fiber,
-    currentFirstChild: Fiber | null,
-    element: ReactElement,
+    returnFiber: Fiber, // 父节点
+    currentFirstChild: Fiber | null, //current fiber
+    element: ReactElement, //jsx
     lanes: Lanes,
   ): Fiber {
     const key = element.key;
     let child = currentFirstChild;
+    // mount的时候 current fiber是为null的
     while (child !== null) {
       // TODO: If key === null and child.key === null, then this only applies to
       // the first item in the list.
@@ -1157,7 +1159,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       }
       child = child.sibling;
     }
-
+    // 判断是不是fragment
     if (element.type === REACT_FRAGMENT_TYPE) {
       const created = createFiberFromFragment(
         element.props.children,
@@ -1168,6 +1170,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       created.return = returnFiber;
       return created;
     } else {
+      // 单一节点的diff 创建子节点 建立联系 返回
       const created = createFiberFromElement(element, returnFiber.mode, lanes);
       created.ref = coerceRef(returnFiber, currentFirstChild, element);
       created.return = returnFiber;
@@ -1237,11 +1240,12 @@ function ChildReconciler(shouldTrackSideEffects) {
       newChild = newChild.props.children;
     }
 
-    // Handle object types
+    // Handle object types 判断是不是object
     const isObject = typeof newChild === 'object' && newChild !== null;
 
     if (isObject) {
       switch (newChild.$$typeof) {
+        // 因为在mount的时候，React.createElement返回的都是单一的 REACT_ELEMENT_TYPE fiber节，所以最开始创建的时候，会进入这个逻辑
         case REACT_ELEMENT_TYPE:
           return placeSingleChild(
             reconcileSingleElement(
