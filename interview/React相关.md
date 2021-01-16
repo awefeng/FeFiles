@@ -91,7 +91,48 @@ diff算法是用来比对React在一次更新以后的前后差异，用更新�
 3. context
 4. 状态库 Redux mobx Unstated等
 5. 订阅监听模式
-6. 
+
+
+
+#### 什么是Portals
+
+Portals是将子组件挂载到父组件之外的一种方案
+
+
+
+#### React有哪些优化手段
+
+1. 使用`useMemo`，`useCallback`来缓存结果或者函数
+2. 使用`React.memo`来包裹没有副作用的组件
+3. 使用`React.PureComponent`来优化纯组件：`React.PureComponent`仅浅比较`props`和`state`有没有变化，并且没有实现`shouldComponetUpdate`
+4. 使用Suspense和lazy来进行懒加载
+5. 使用`React`的生产版本
+6. 使用chrome的性能分析，分析耗时组件
+7. 虚拟长列表进行优化
+
+
+
+#### React如何区分Class Component 和Function Component
+
+1. 可以用`MyClassComponent instanceof React.Component`方式来进行判断，但是当项目中有多个`React`副本的时候(一般不可能，除非引入了多个React版本)，此方法可能出现``MyClassComponent extends React1`但是检查的时候`MyClassComponent instanceof React2.Component`
+
+2. 在`React Component`源码中在组件基类`Component`中加了个属性用来判断是不是类Component：
+
+   源码
+
+   ```javascript
+   Component.prototype.isReactComponent = {};
+   ```
+
+   
+
+
+
+#### React Hooks是什么 怎么理解
+
+React的Hooks是框架设计者针对React不同的阶段抽象出来的原子操作，比如想state，props等。是对React底层（三阶段）的具体抽象。而生命周期用来描述React组件的历程。
+
+
 
 
 
