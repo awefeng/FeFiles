@@ -1,3 +1,4 @@
+const cloneDeep = require('./cloneDeep')
 
 const a = {
   str: 'this is string',
@@ -20,7 +21,7 @@ const a = {
 // 序列化与反序列化
 // const b = cloneDeepByFlatten(a)
 // 浅拷贝+ 递归
-const b = cloneDeepByRecursion(a)
+const b = cloneDeep.cloneDeepByRecursion(a)
 // lodash cloneDeep
 // const b = _.cloneDeep(a)
 
