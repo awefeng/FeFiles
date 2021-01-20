@@ -117,13 +117,13 @@ position指的是元素的定位
      `column-reverse`：下到上 竖直排列
 
 		2.	```flex-wrap```：是否换行，值：`nowrap,wrap,wrap-reverse`
-	
+		
 		3.	`flex-flow`： `flex-direction`和`flex-wrap`的结合
-	
+		
 		4.	`justify-content`：`flex-direction`的对齐方式，（比如row的时候就是水平怎么对齐，是两端对齐还是中间相隔距离相同对齐等）
-	
+		
 		5.	`align-items`： 相对于`flex-direction`的交叉轴对齐方式，（比如上下对齐，往上对齐，往下对齐，中间对齐）
-	
+		
 		6.	`align-content`：`flex-wrap`换行了，多行的时候才可以起效果。
 
 #### 针对子元素：

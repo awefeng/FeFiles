@@ -40,7 +40,7 @@
 
 3. `promise`中调用`resolve`或者`reject`以后，后面的代码还是会执行，除非显示的调用`return`
 
-4. `promise`中的`catch`其实就是`.then(null | undefined, rejectFunc)`
+4. `promise`中的`catch`其实就是`.then(undefined, rejectFunc)`
 
 5. `promsie`中的`then`会返回一个新的`promise`，因此有链式调用`.then().then()`
 
