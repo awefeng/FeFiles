@@ -1,9 +1,14 @@
 function Student(name){
+  if(!(this instanceof Student)){
+    return new Student(name)
+  }
     this.name = name
 }
+
 console.log(_new(Student, 'awefeng'))
 
 function _new(...args){
+
 	const constructor = args.shift()
   // 第一步
   const obj = Object.create(constructor.prototype)
