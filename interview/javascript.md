@@ -1,6 +1,6 @@
 #### JS数据类型
 
-基本类型：string number boolean null undefined symbol bigint
+基本类型：undefined null boolean number string symbol  (bigint)
 
 引用类型：object
 
@@ -29,6 +29,30 @@ typeof a //object
 
 
 
+#### null undefined 和 boolean
+
+1. null 和undefined 都表示无，但是`typeof null // 'object'`
+2. boolean值只有true和false，JavaScript在预期要转换为boolean的地方就会进行转换，`null undefined '' "" NaN 0 `都换转为false
+
+
+
+#### 判断对象
+
+```javascript
+function isObject1(obj){
+  return obj === Object(obj)
+}
+
+// React里面
+function isObject2(obj){
+  return (typeof obj === 'object' typeof obj === 'function') && obj !==null
+}
+
+Object.prototype.toString.call(obj)
+```
+
+
+
 #### 对象
 
 in 操作符：
@@ -52,9 +76,49 @@ for(let key in a){
 
 
 
+#### 函数
+
+函数是变量，也会有自己的属性，在声明函数的时候也会存在这变量提升的问题。
+
+函数的属性：
+
+```js
+function a(x){return x}
+
+a.name = 'a' // 函数的名称
+a.length = 1 // 函数的参数个数
+a.toString() // 继承对象的方法 返回的是函数的源码  原生函数返回的是Native Code
+
+```
+
+函数变量提升：
+
+对于function 和var 都会存在变量提升这个问题：提升会首先声明这个变量然后=undefined ，最后到写代码的行数进行赋值
+
+```js
+function a(){
+	console.log(a) // undefined
+	var a = 1
+}
+//实际
+function a(){
+	var a = undefined
+  console.log(a)
+  a = 1
+}
+```
+
+
+
+arguments:
+
+是一个对象，类似数组可以通过参数出现的位置进行访问，但是不是数组。
+
+
+
 #### 标准库
 
-Object()：
+Object()： Object() 和Object是有区别的： 一个是构造函数，也可以当工具函数，一个是Object对象，但是本质上是一样的。都是Object类
 
 1. Object() 可以作为一个包装函数。传入的基本类型值就会包装成对应值的类型的对象，传入对象则返回其本身。
 
@@ -65,11 +129,7 @@ Object()：
    aObj === bObj  // true
    ```
 
-   
-
 2. Object()作为构造函数
-
-3. Object.keys 返回自身的属性，因为是遍历，所以不能返回不可遍历的属性，而Object.getOwnPropertyNames则是可以获取到不可以遍历的属性。
 
    ```javascript
    const a = ['a', 'b']
@@ -79,6 +139,7 @@ Object()：
    ```
 
    
+
 
 Array：
 
@@ -208,9 +269,35 @@ Function.prototype.myBind = function(_this){
 
 #### 原型链
 
+原型的出现：一些对象共用一些属性或者方法，就出现了原型。原型是一个object，保存了共用的方法和属性。object都有自己的原型（除了null），所以对象的原型也有自己的原型。从而形成了原型链，所有对象的原型链顶端都是Object.prototype，然后Object.prototype的原型是null，用来终止原型链：`Object.getPrototypeOf(Object.prototype)  // null`
+
+
+
+当读取一个对象的属性的时候，如果对象有这个属性就返回，没有就去原型链上找，向上递归。
+
+instanceof
+
 
 
 #### 继承
+
+继承就是把一个对象的属性和方法也作为自己的属性和方法，也就是说不光是实例上的属性和方法，还有原型链上的实例和方法。
+
+```js
+function Animal(name){
+  this.name = name
+}
+
+function Cat(){
+  Animal.call(this, arguments)
+  this.shut = 'miao'
+}
+
+Cat.prototype = new Animal()
+// Cat原型链指正以后 需要正确指向构造函数
+Cat.prototype.constructor = Cat
+
+```
 
 
 

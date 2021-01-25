@@ -187,6 +187,10 @@ const Link: FC<LinkProps> = props => {
 
 
 
+React-router里面用的是history库，库里面封装了listen和push，对应原生应该是popState，pushState，replaceState
+
+
+
 #### 非Native、DOM环境下实现路由
 
 思路：

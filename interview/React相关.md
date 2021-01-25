@@ -112,6 +112,8 @@ Portals是将子组件挂载到父组件之外的一种方案
 
 
 
+
+
 #### React如何区分Class Component 和Function Component
 
 1. 可以用`MyClassComponent instanceof React.Component`方式来进行判断，但是当项目中有多个`React`副本的时候(一般不可能，除非引入了多个React版本)，此方法可能出现``MyClassComponent extends React1`但是检查的时候`MyClassComponent instanceof React2.Component`
@@ -131,6 +133,10 @@ Portals是将子组件挂载到父组件之外的一种方案
 #### React Hooks是什么 怎么理解
 
 React的Hooks是框架设计者针对React不同的阶段抽象出来的原子操作，比如想state，props等。是对React底层（三阶段）的具体抽象。而生命周期用来描述React组件的历程。
+
+
+
+#### ClassComponent和FunctionComponent的区别
 
 
 
