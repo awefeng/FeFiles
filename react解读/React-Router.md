@@ -206,3 +206,21 @@ React-router里面用的是history库，库里面封装了listen和push，对应
 
 // 动态优化https://segmentfault.com/a/1190000011765141
 
+
+
+
+
+#### hash模式
+
+url #后的hash内容变化后，会触发hashchange来改变，`addEventListener('hashchange', callback)`，通过hashchange来匹配component。hashchange能监听locaiton变化，a标签和前进后退。
+
+
+
+#### 浏览器原生
+
+通过popState来进行路由变化，`addEventListener('popState', callback)`，popState只有浏览器点击回退和前进才能触发。通过pushState和replaceState只能改变访问的浏览记录，不能够触发popState。
+
+解决办法： pushState和repleceState以后，手动去调用popstate的回调函数，popState的回调函数是用来matchPath的。
+
+
+

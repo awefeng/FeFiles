@@ -24,12 +24,12 @@
 
 1. 老的架构只有`reconciler(协调器，负责diff)`和`render(渲染器，负责渲染到对应的agent)`
 2. `react`发生更新后，`reconciler`和`render`是同步进行的（一次更新只会进行一次diff，但是界面上的一个动作，比如打开modal，react可能会认为是多个动作），且这个过程不可终端（即diff过程不可终端）。
-3. reconciler在进行diff的过程中，一旦发现某个dom更新了，就会通知render去渲染，渲染完成后再进行后面的diff过程，去发现另外需要更新的dom，然后再去通知render进行更新，如此循环直到diff结束，即递归更新（源码里的`mountComponent`和`updateComponent`相关）。
+3. reconciler在进行diff的过程中，一旦发现某个state更新了，就会通知render去渲染，渲染完成后再进行后面的diff过程，去发现另外需要更新state，然后再去通知render进行更新，如此循环直到diff结束，即递归更新（源码里的`mountComponent`和`updateComponent`相关）。
 4. [filer的介绍中有提到react15的diff](https://www.youtube.com/watch?v=ZCuYPiUIONs&t=801s)
 
 #### 老的架构为什么不能异步可中断更新
 
-1. react15架构中，在处理`一个动作触发多次更新`的情况的时候，是同步进行的，如果在某一次更新（某一次diff）进行中断，则后面的更新不能够进行（因为react15不支持异步，所以中断后是不能重新启动的），界面只能重新渲染一部分，在用户看来就是bug。
+1. react15架构中，在处理`一个动作触发多次更新`的情况的时候，是同步进行的，如果在某一次更新（某一次diff）进行中断，则后面的更新不能够进行（因为react15不支持异步，所以中断后是不能重新启动的），所以设计成成recocile过程不能够中断， 界面只能重新渲染一部分，在用户看来就是bug。
 2. 第一条的解释只解释了react15是`同步更新`，用来解释为什么不支持异步更新很牵强，好比`因为它不支持中异步所以不能异步可中断更新`，老的架构为什么不能支持异步可中断更新：因为它就没设计。
 
 #### 新的架构（React16）：scheduler + reconciler + renderer - 异步可中断更新

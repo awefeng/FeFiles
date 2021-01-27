@@ -8,6 +8,10 @@
 
 React考虑到不同浏览器之间API的差异以及这些差异对框架代理的影响。因此实现了一个跨浏览器包装器，将大部分浏览器的API进行统一包装，以达到在用React写事件的时候能够统一。
 
+合成事件并不绑定在对应的DOM节点上，而是通过事件冒泡到document，React在document监听所有支持的事件，然后自己实现了一个事件中间层，将事件统一处理。
+
+为什么统一在document处理：DOM节点上绑定事件过多会影响性能
+
 开发者如果想调用浏览器的原生事件，则调用`nativeEvent`属性。
 
 
@@ -22,7 +26,7 @@ React高阶组件是用来复用其他组件逻辑的技巧，是包裹复用组
 
 根据最新版本的React，`setState`同步还是异步在不同不模式下不同：
 
-1. 在`legacy`模式下（也就是调用`React.render()`），如果`setState`引起的变化命中了React中的批处理`batchedUpdates`，则批处理会将所有时间合成一个事件然后再进行调用，此时`setState`就是异步；如果`setState`引起的变化未命中批处理情况，则是同步。
+1. 在`legacy`模式下（也就是调用`React.render()`），如果`setState`引起的变化命中了React中的批处理`batchedUpdates`，则批处理会将所有更新合成一个事件然后再进行调用，此时`setState`就是异步；如果`setState`引起的变化未命中批处理情况，则是同步。
 
    如何跳过`batechedUpdate`：在`batechedUpdate`源码中，当执行回调以后，会将表示要进行批处理的变量重置，因此我们只需要将会回调函数变成异步，比如用`setTimeout`包裹。则`setState`会等到批处理重置后进行执行。这个时候`scheduleUpdateOnFiber`每次发起更新的时候，没检测到批处理变量，就会同步执行更新，这个时候`setState`就是同步的。
 
@@ -137,6 +141,17 @@ React的Hooks是框架设计者针对React不同的阶段抽象出来的原子�
 
 
 #### ClassComponent和FunctionComponent的区别
+
+https://overreacted.io/zh-hans/how-are-function-components-different-from-classes/
+
+1. FC每次渲染的时候都会重新执行一次，而CC因为this指针是可变的，每次拿到的props和state都是最新的。
+2. FC的通过useEffect将一个逻辑代码连接到一起，而CC是通过生命周期的方式来将逻辑代码的不同阶段分配到不同的生命周期中，代码比较分散。
+3. FC里需要捕获最新的值，通过ref
+4. 
+
+相对CC来说，FC的逻辑更清楚，心智模型更简单，行为更能预测。
+
+#### this.setState 和 useState有什么区别
 
 
 
