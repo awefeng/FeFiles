@@ -43,7 +43,7 @@
 3. ReactComponent 和 ReactElement 是什么关系
 
    1. ReactComponent是什么：react组件，对于ClassComponent来说，就是ClassComponent这个类本身；对于FunctionComponent来说，就是FunctionComponent本身。对于hostComponent来说就是标签本身
-   2. ReactElement是什么：react组件在调用React.createElement()后生女的一个实例。
+   2. ReactElement是什么：react组件在调用React.createElement()后生成的一个实例。
 
    可以简单的理解为：ReactElement是ReactComponent在react运行这个组件的时候，通过React.createElement()产生的一个组件实例，
 

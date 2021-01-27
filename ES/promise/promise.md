@@ -22,8 +22,8 @@
 
 Promise构造函数接受一个回调函数作为参数，这个回调函数有两个参数：
 
-1. resovle函数，作用是将promise的状态从pendding变为resolved（fulfilled），抛出参数
-2. reject函数，作用是将promise状态从pendding改变为rejected，抛出参数
+1. resovle函数，作用是将promise的状态从pending变为resolved（fulfilled），抛出参数
+2. reject函数，作用是将promise状态从pending改变为rejected，抛出参数
 
 
 
@@ -71,7 +71,7 @@ then方法会返回一个新的promise实例，不是原来那个。
 
 ```js
 Promise.prototype.catch = function(callback){
-  return this.then(undefined, callback)
+  return this.then(undefined, function(...args){ return callback(...args)})
 }
 ```
 
@@ -107,7 +107,7 @@ Promise.prototype.finally = function(callback){
   cosnt _P = this.constructor
   return this.then(
     val => _P.resolve(callback()).then(()=>val), 
-    error => _P.resolve(callback()).then(() => new Error(error))
+    err => _P.resolve(callback()).then(() => {throw err})
   )
 }
 ```
@@ -121,7 +121,28 @@ Promise.prototype.finally = function(callback){
    传入一组promise对象arr，arr中的promise会同时执行异步任务，当arr所有的promise对象都已经fullfiled的时候，promise.all返回的promsie对象才是fullfiled，arr里面一旦有一个rejected，arr中后面的promise不会执行，promise.all会直接返回一个rejected对象。
 
 ```js
-Promise.
+Promise.all = function (promises){
+  return new Promise((resolve, reject) => {
+  	if(!Array.isArray(promises)){
+      throw new Error('arguments is not a array')
+    }
+		const result = []
+    const len = promises.length
+    for(let i=0;i<len;i++){
+			Promise.resolve(promises[i]).then(
+      	val => {
+          result.push(val)
+          if(i === len-1 && result.lenth === len){
+            return resolve(result)
+          }
+        },
+        err => {
+          return reject(err)
+        }
+      )
+    }
+  })
+}
 ```
 
 

@@ -60,17 +60,18 @@
 
 1. 编译后build产生chunk块，各种优化模块（代码分割，压缩等）进行工作。
 2. 生成最终代码形成bundle
-3. 输入最后编译文件夹
+3. 输出最后编译文件夹
 
 
 
 #### webpack的打包优化
 
-1. 项目引入`webpack-bundle-analyzer`等第三方打包分析工具，打包后打开分析结果页进行占用分析
+首先是分析文件大小：项目引入`webpack-bundle-analyzer`等第三方打包分析工具，打包后打开分析结果页进行占用分析
+
 2. 生产环境关闭`source map`
-3. 资源压缩：webpack和nginx配置`Gzip`压缩
+3. 资源压缩：webpack和nginx配置压缩：compression-webpack-plugin
 4. 调用的第三方库配置按需加载
-6. 代码分割等其他优化等。
+6. 代码动态加载，代码分割等其他优化等。
 
 
 
@@ -78,11 +79,13 @@
 
 HMR在应用程序允许的时进行模块的增加、删除、修改操作，而无需让程序重新加载
 
-1. 应用程序要求HMR runtime检查更新
-2. 检查到更新，HMR进行更新模块的异步下载，返回给应用程序有更新可用
-3. 应用程序给HMR下达更新命令
-4. HMR runtime进行同步更新：manifest（webapck编过程中的所有模块的数据集合）更新和chunk块更新
-5. chunk块更新是编译阶段，需要更深入。
+开起HRM后
+
+1. 打包生成bundle的时候，HRM会插入一段代码来让生成代码配合HRM。
+2. 代码修改后，webpack重新打包，要求HMR runtime检查更新
+3. 检查到更新，服务器dev-server会想浏览器发送更新通知。
+4. bundle里面HRM插入的代码接收到更新，通过jsonp拉取新的模块
+5. 拉取完成后，通过jsonp的回调来进行更新。
 
 
 
