@@ -10,9 +10,4 @@ function toHump(str){
     return str.replace(/-([a-z])/g, val => val[1].toUpperCase())
 }
 
-
-
-
-
-
 console.log(toHump('as-sdsd-sdsd-9xxx'))
