@@ -1,3 +1,4 @@
+/*
 Promise.prototype.myCatch = function(callabck){
     return this.then(undefined, function(...args){
        return callabck(...args)
@@ -30,6 +31,38 @@ Promise.myAll = function(promises){
     
 }
 
+*/
+
+Promise.prototype.catch =  function(callback){
+    return this.then(undefined, function(...args){return callback(...args)})
+}
+
+Promise.prototype.finally = function(callback){
+    return this.then(
+        val=> Promise.resolve(callback()).then(()=> val),
+        error=>Promise.resolve(callback()).then(()=>{
+            throw error
+        })
+    )
+}
+
+Promise.all = function(promises){
+    return new Promise((resolve, reject)=> {
+        if(Array.isArray(promises)){ throw new Error('参数错误')}
+        const result = []
+        for(let i =0; i< promises.length; i++){
+            Promise.resolve(promises[i]).then(val => {
+                result.push(val)
+                if(result.length === promises.length){
+                    return resolve(result)
+                }
+            }, error => {
+                return reject(error)
+            })
+        }
+    })
+}
+
 function ajax(method, url, data){
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest()
@@ -45,6 +78,17 @@ function ajax(method, url, data){
         }
         xhr.send(data)
     })
+}
+
+function add(...args){
+    return args.reduce((a, b)=> a+b)
+}
+function sum(...args){
+    function temp(...newArgs){
+        return sum(add(...args) + add(...newArgs))
+    }
+    temp.toString = function(){return add(...args)}
+    return sum
 }
 
 
