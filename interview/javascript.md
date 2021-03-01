@@ -234,7 +234,7 @@ bind：绑定运行函数的this指向，然后返回一个新的函数
 手写call：
 
 ```javascript
-Function.prot0type.myCall = function(_this){
+Function.prototype.myCall = function(_this){
 	_this.func = this
   const result = _this.func()
   delete _this.func

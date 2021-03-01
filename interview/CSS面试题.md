@@ -6,7 +6,7 @@
 
 标准盒子模型中```width height```就是指的内容的宽度和高度
 
-```width = content_width + padding_left + padding_right + border_left + border_right```
+```width = content_width```
 
 ```box-sizing: content-box``` 将元素设置为W3C标准盒子，默认值，一般不用设置
 
@@ -14,7 +14,7 @@
 
 IE盒子模型中```width height```指的是```padding  border```+内容的宽度和高度
 
-```width = content_width```
+```width = content_width + padding_left + padding_right + border_left + border_right```
 
 ```box-sizing: border-box``` 将元素设置为IE盒子
 
